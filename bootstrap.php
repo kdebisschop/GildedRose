@@ -15,5 +15,4 @@ spl_autoload_register(function($class) {
 
   include $filename;
   return true; // End autoloader successfully.
-
 });

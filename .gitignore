@@ -2,3 +2,4 @@
 /vendor/
 /GuildedRose.iml
 /.idea/
+/composer.lock
