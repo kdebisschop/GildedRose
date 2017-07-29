@@ -16,7 +16,7 @@ if (preg_match('/\.(?:png|jpg|jpeg|gif)$/', $request)) {
 require_once __DIR__ . '/bootstrap.php';
 
 // Initialize uniform storage
-$dbo = new \GildedRose\SqlStorage();
+$dbo = new GildedRose\SqlStorage();
 
 // Route request
 switch ($request) {
@@ -27,11 +27,11 @@ switch ($request) {
     break;
 
   case '/rooms/listAll':
-    echo json_encode((new \GildedRose\Room($dbo))->listAllRooms());
+    echo json_encode((new GildedRose\Room($dbo))->listAllRooms());
     break;
 
   case '/customer/create':
-    echo
+    echo json_encode((new GildedRose\Occupant($dbo))->newCustomer());
 
   default:
     echo json_encode(['status' => 404, 'message' => "No route for '$request'"]);

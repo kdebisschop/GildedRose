@@ -9,27 +9,18 @@
 namespace GildedRose;
 
 
-class Booking
+class Booking extends HotelObject
 {
-
-    private $dbo;
-
-    /**
-     * Hotel constructor injects data storage.
-     *
-     * @param \PDO $dbo
-     */
-    public function __construct(\PDO $dbo)
-    {
-        $this->dbo = $dbo;
-    }
-
     /**
      * Initialize data storage.
+     *
+     * {@internal this data definition assumes auto-incrementing primary key from Sqlite}
      */
     public function initSchema(): void
     {
-        $this->dbo->exec('CREATE TABLE booking (id INTEGER, integer customer, checkin TIMESTAMP, checkout TIMESTAMP, PRIMARY KEY(id ASC))');
+        $sql = 'CREATE TABLE booking
+          (id INTEGER, customer INTEGER, room INTEGER, checkin TIMESTAMP, checkout TIMESTAMP, PRIMARY KEY(id ASC))';
+        $this->dbo->exec($sql);
     }
 
     public function request(int $occupants, int $storage, int $checkin, int $checkout)

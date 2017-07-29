@@ -11,20 +11,8 @@ namespace GildedRose;
 /**
  * @property \PDO dbo
  */
-class Room
+class Room extends HotelObject
 {
-    /** @var \PDO Uniform data storage */
-    private $dbo;
-
-    /**
-     * Occupant constructor injects uniform data storage.
-     * @param \PDO $dbo
-     */
-    public function __construct(\PDO $dbo)
-    {
-        $this->dbo = $dbo;
-    }
-
     /**
      * Initialize data storage.
      */
