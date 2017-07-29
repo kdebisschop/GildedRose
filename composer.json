@@ -16,5 +16,9 @@
     "psr-0": {
       "GildedRose": "src/GildedRose"
     }
+  },
+  "require": {
+    "symfony/http-foundation": "v3.3.5",
+    "roave/security-advisories": "dev-master"
   }
 }
