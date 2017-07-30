@@ -9,7 +9,8 @@ including:
  * Reserving a room: http://127.0.0.1:8000/rooms/reserve
  * Determining cleaning schedule: http://127.0.0.1:8000/cleaning/schedule
  
-Request parameters and expected return values are described in greater detail below. 
+Request parameters and expected return values are described in greater detail below and in
+the source code for the router. (TODO: add this documentation) 
 
 
 REQUIREMENTS
@@ -101,5 +102,53 @@ My primary reference was http://www.php.net to find settings for a things I use 
  * Some driver-specific settings and capabilities for SQLite PDO
 
 In addition I used the SQLlite documentation and I used wikipedia to verify the constraints
-and best practices implied in being a REST endpoint. 
+and best practices implied in being a REST endpoint.
+
+Third-Party Libraries
+---------------------
+
+This application uses symfony/http-foundation and phpunit. PHPunit is the defacto standard for PHP
+testing, so it was an easy call. Http-foundation is a well tested part of a mature framework. I considered
+using a full symfony REST bundle, but it became apparent to me that I'd need several hours to absorb standard
+construction and practice with a from scratch install, so I decided no.
+
+In retrospect, much more of the database access was amanable to ORM representation that I expected during
+planning, so an more database abstraction than PDO might have been a good tool to build in to the project.
+
+Time Investment
+---------------
+
+I have spent rather more than a few hours - I confess to being impressed that you would consider this a
+few hour long project. I'd estimate I've spent about 15 hours and still have significant bits of functionality
+unimplemented, most particularly the method to reschedule cleanings when a new reservation is made. If I had
+unlimited time to spend, I would look at these items:
+
+ * Implement rescheduler for cleaning - the system really does not work without that capability
+ * Complete REST API documentation
+ * Implement data validation - I'm primarily depending on SQL prepared queries to isolate from errors and
+   attack. It would not be nearly adequate for live deployment.
+ * Add better control over time zone -- I store timestamp in the database, so I know it's UTC. But I need to
+   allow users to set a default timezone rather than depending on explicit timezones in REST parameters.
+ * Move within a full framework like symfony or zend.
+ * Build something like a real test suite
+
+Automated Testing
+-----------------
+
+To build automated testing, I would use copies of the Sqlite database to inject as dependencies
+into the tests I have created. By injecting controlled database instances into the test, I can verify
+edge cases and assertions without using the production database. All the classes are defined to get a PDO
+object, so PHPunit should readily drive tests based on mock of the database. There is some coupling between
+classes that will create a manageable number of tests that are unduly complex, but the bones of a test framework for
+normal cases is started. 
+
+For comprehensive automated testing, there also needs to be an analysis of degenerate and edge cases which
+I have not done in a systematic way - including testing incorrect and potentially malicious inputs. Also,
+queries against the REST endpoint with Guzzle or equivalent should be added to ensure the router is
+correctly integrated with the unit tested backend classes.
+
+Lastly, the way the business rules are applied by looping through all rooms inside other loops leads
+me to expect that the computational cost of this code grows rather more steeply than we'd desire. If there is
+any chance the inn will have significantly more rooms, performance testing for order of growth should be
+conducted and nested loops addressed.
  
