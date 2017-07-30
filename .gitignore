@@ -2,4 +2,4 @@
 /.idea/
 /composer.lock
 /var/GildedRose.sq3
-/vendor/
+vendor/
