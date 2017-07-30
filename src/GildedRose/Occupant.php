@@ -3,7 +3,7 @@
  * @file
  * Contains Occupant.php
  *
- * PHP Version 5
+ * PHP Version 7
  */
 
 namespace GildedRose;
@@ -20,7 +20,9 @@ class Occupant extends HotelObject
      */
     public function initSchema(): void
     {
-        $this->dbo->exec('CREATE TABLE customer (id INTEGER, name VARCHAR(64), email VARCHAR(256), PRIMARY KEY(id ASC ))');
+        $sql = 'CREATE TABLE IF NOT EXISTS customer
+          (id INTEGER, name VARCHAR(64), email VARCHAR(256), PRIMARY KEY(id ASC ))';
+        $this->dbo->exec($sql);
     }
 
     /**
@@ -35,10 +37,15 @@ class Occupant extends HotelObject
         $statement->execute([$name, $email]);
     }
 
-    public function getCustomer(int $id)
+    /**
+     * Gets a customer based on their ID.
+     * @param int $customerId
+     * @return mixed
+     */
+    public function getCustomer(int $customerId)
     {
         $statement = $this->dbo->prepare('SELECT name, email FROM customer WHERE id = ?');
-        $statement->execute([$id]);
+        $statement->execute([$customerId]);
         return $statement->fetch(\PDO::FETCH_ASSOC);
     }
 }

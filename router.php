@@ -22,14 +22,26 @@ $dbo = new GildedRose\SqlStorage();
 
 // Route request
 switch ($requestUri) {
-    case '/initialize':
-        $hotel = new GildedRose\Hotel($dbo);
-        $hotel->buildHotel();
-        echo json_encode(['status' => 200, 'message' => 'OK']);
+    case '/rooms/available':
+        $luggage = $request->query->get('luggage');
+        $checkin = date_create($request->query->get('checkin'))->getTimestamp();
+        $checkout = date_create($request->query->get('checkout'))->getTimestamp();
+        return json_encode((new GildedRose\Booking($dbo))->findAvailableRooms($luggage, $checkin, $checkout));
         break;
 
-    case '/rooms/listAll':
-        echo json_encode((new GildedRose\Room($dbo))->listAllRooms());
+    // @todo use request->request after v1
+    case '/rooms/reserve':
+        $room = $request->get('room');
+        $customer = $request->get('customer');
+        $luggage = $request->get('luggage');
+        $checkin = date_create($request->get('checkin'))->getTimestamp();
+        $checkout = date_create($request->get('checkout'))->getTimestamp();
+        echo json_encode((new GildedRose\Booking($dbo))->reserve($room, $customer, $luggage, $checkin, $checkout));
+        break;
+
+    case '/cleaners/schedule':
+        $date = date_create($request->query->get('date'));
+        echo json_encode((new GildedRose\Cleaners($dbo))->getSchedule($date));
         break;
 
     // @todo use request->request after v1
@@ -39,25 +51,24 @@ switch ($requestUri) {
         echo json_encode((new GildedRose\Occupant($dbo))->newCustomer($name, $email));
         break;
 
+    case '/rooms/listAll':
+        echo json_encode((new GildedRose\Room($dbo))->listAllRooms());
+        break;
+
     case '/customer/find':
         $id = $request->query->get('id');
         echo json_encode((new GildedRose\Occupant($dbo))->getCustomer($id));
         break;
 
-    // @todo use request->request after v1
-    case '/room/reserve':
-        $room = $request->get('room');
-        $customer = $request->get('customer');
-        $luggage = $request->get('luggage');
-        $checkin = date_create($request->get('checkin'))->getTimestamp();
-        $checkout = date_create($request->get('checkout'))->getTimestamp();
-        echo json_encode((new GildedRose\Booking($dbo))->reserve($room, $customer, $luggage, $checkin, $checkout));
-        break;
-
-    // @todo use request->request after v1
     case '/reservation/find':
         $id = $request->query->get('id');
         echo json_encode((new GildedRose\Booking($dbo))->getReservation($id));
+        break;
+
+    case '/admin/initialize':
+        $hotel = new GildedRose\Hotel($dbo);
+        $hotel->buildHotel();
+        echo json_encode(['status' => 200, 'message' => 'OK']);
         break;
 
     default:

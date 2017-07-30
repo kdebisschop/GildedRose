@@ -3,7 +3,7 @@
  * @file
  * Contains Room.php
  *
- * PHP Version 5
+ * PHP Version 7
  */
 
 namespace GildedRose;
@@ -18,7 +18,9 @@ class Room extends HotelObject
      */
     public function initSchema(): void
     {
-        $this->dbo->exec('CREATE TABLE room (id INTEGER, name VARCHAR(32) UNIQUE, occupants INTEGER, storage INTEGER, PRIMARY KEY(id ASC))');
+        $sql = 'CREATE TABLE  IF NOT EXISTS room
+          (id INTEGER, name VARCHAR(32) UNIQUE, occupants INTEGER, storage INTEGER, PRIMARY KEY(id ASC))';
+        $this->dbo->exec($sql);
     }
 
     /**
@@ -42,7 +44,7 @@ class Room extends HotelObject
     public function listAllRooms(): array
     {
         $result = [];
-        $rooms = $this->dbo->query('SELECT id, name , occupants, storage FROM room', \PDO::FETCH_ASSOC);
+        $rooms = $this->dbo->query('SELECT id, name, occupants, storage FROM room', \PDO::FETCH_ASSOC);
         foreach ($rooms as $room) {
             $result[$room['id']] = [
                 'name' => $room['name'],
@@ -54,23 +56,20 @@ class Room extends HotelObject
     }
 
     /**
-     * List rooms in the hotel that can accommodate customers.
-     * @param int $checkin
-     * @param int $checkout
-     * @return array
+     * Get characteristics of a room.
+     *
+     * @param int $roomId Room number.
+     * @return array Room description (id, name, maximum # of occupants, and luggage capacity).
      */
-    public function listVacancies(int $checkin, int $checkout): array
+    public function find(int $roomId): array
     {
-        $result = [];
-        $rooms = $this->dbo->query('SELECT id, name , occupants, storage FROM room', \PDO::FETCH_ASSOC);
-        foreach ($rooms as $room) {
-            $result[$room['id']] = [
-                'name' => $room['name'],
-                'capacity' => $room['occupants'],
-                'storage' => $room['storage'],
-            ];
+        $statement = $this->dbo->prepare('SELECT id, name, occupants, storage FROM room WHERE id = ?');
+        if ($statement->execute([$roomId])) {
+            $record = $statement->fetch(\PDO::FETCH_ASSOC);
+            if ($record) {
+                return $record;
+            }
         }
-        return $result;
+        return ['occupants' => 0, 'storage' => 0];
     }
-
 }

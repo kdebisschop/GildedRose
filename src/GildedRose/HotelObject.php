@@ -3,7 +3,7 @@
  * @file
  * Contains HotelObject.php
  *
- * PHP Version 5
+ * PHP Version 7
  */
 
 namespace GildedRose;

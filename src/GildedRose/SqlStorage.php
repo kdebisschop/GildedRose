@@ -3,16 +3,23 @@
  * @file
  * Contains Sqlite.php
  *
- * PHP Version 5
+ * PHP Version 7
  */
 
 namespace GildedRose;
 
+/**
+ * Provides a single point of access for database storage.
+ */
 class SqlStorage extends \PDO
 {
+    /**
+     * SqlStorage constructor creates a PDO object.
+     */
     public function __construct()
     {
-        $dsn = 'sqlite:' . __DIR__ . 'GildedRose.sq3';
+        $dbFile = dirname(__DIR__, 2) . '/var/GildedRose.sq3';
+        $dsn = 'sqlite:' . $dbFile;
         $username = '';
         $passwd = '';
         $options = [];
