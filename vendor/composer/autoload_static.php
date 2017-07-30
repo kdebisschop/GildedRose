@@ -6,6 +6,10 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit7827cdd149f433caa9eba7509b988e04
 {
+    public static $files = array (
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
+    );
+
     public static $prefixLengthsPsr4 = array (
         'p' => 
         array (
@@ -14,6 +18,11 @@ class ComposerStaticInit7827cdd149f433caa9eba7509b988e04
         'W' => 
         array (
             'Webmozart\\Assert\\' => 17,
+        ),
+        'S' => 
+        array (
+            'Symfony\\Polyfill\\Mbstring\\' => 26,
+            'Symfony\\Component\\HttpFoundation\\' => 33,
         ),
         'D' => 
         array (
@@ -32,6 +41,14 @@ class ComposerStaticInit7827cdd149f433caa9eba7509b988e04
         'Webmozart\\Assert\\' => 
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
+        ),
+        'Symfony\\Polyfill\\Mbstring\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
+        ),
+        'Symfony\\Component\\HttpFoundation\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/http-foundation',
         ),
         'Doctrine\\Instantiator\\' => 
         array (
