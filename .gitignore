@@ -1,7 +1,5 @@
-/src/GildedRoseGildedRose.sq3
-/vendor/
-/vendor/*/
 /GuildedRose.iml
 /.idea/
 /composer.lock
 /var/GildedRose.sq3
+/vendor/
