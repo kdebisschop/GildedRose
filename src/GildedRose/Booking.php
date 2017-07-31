@@ -48,6 +48,9 @@ class Booking extends HotelObject
         }
         $statement = $this->dbo->prepare('INSERT INTO booking (room, customer, luggage, checkin, checkout) VALUES (?, ?, ?, ?, ?)');
         if ($statement->execute([$room, $customer, $luggage, $checkin, $checkout])) {
+            $reservationId = $this->dbo->query("SELECT MAX(id) FROM booking")->fetchColumn();
+            $cleaners = new Cleaners($this->dbo);
+            $cleaners->rebuildSchedule($reservationId);
             return ['room' => $room, 'customer' => $customer, 'luggage' => $luggage, 'checkin' => $checkin, 'checkout' => $checkout];
         }
         return ['status' => 500, 'message' => 'Database error'];
