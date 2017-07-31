@@ -23,7 +23,7 @@ class Rules extends HotelObject
      * @param int $checkin
      * @return bool
      */
-    public function isAvailable (array $room, int $luggage, int $checkin): bool
+    public function isAvailable(array $room, int $luggage, int $checkin): bool
     {
         $clean = new Cleaners($this->dbo);
         if (!$clean->hasBeenCleaned($room['id'], $checkin)) {

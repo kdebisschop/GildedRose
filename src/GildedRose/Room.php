@@ -72,4 +72,16 @@ class Room extends HotelObject
         }
         return ['occupants' => 0, 'storage' => 0];
     }
+
+    /**
+     * Returns worst-case cleaning time for a room, based on full occupancy.
+     *
+     * @param int $roomNumber
+     * @return float
+     */
+    public function cleaningTime(int $roomNumber): float
+    {
+        $room = $this->find($roomNumber);
+        return 1.0 + 0.5 * $room['occupants'];
+    }
 }

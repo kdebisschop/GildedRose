@@ -19,7 +19,7 @@ class Cleaners extends HotelObject
           (id INTEGER, name VARCHAR(32) UNIQUE, PRIMARY KEY(id ASC))';
         $this->dbo->exec($sql);
         $sql = 'CREATE TABLE IF NOT EXISTS schedule
-          (id INTEGER, room INTEGER, name VARCHAR(32) UNIQUE, start TIMESTAMP, finish TIMESTAMP, PRIMARY KEY(id ASC))';
+          (id INTEGER, room INTEGER, crew INTEGER, start TIMESTAMP, finish TIMESTAMP, PRIMARY KEY(id ASC))';
         $this->dbo->exec($sql);
     }
 
@@ -98,17 +98,107 @@ class Cleaners extends HotelObject
      *  - Although the query is by day, we need to ensure we catch any rooms that were vacated
      *    the previous day but not cleaned because the checkout time was out of shift.
      *
-     * @todo Not Yet Implemented
+     * @todo Handle case where two customer are booked into room with potentially different checkout times.
      *
      * @param int $booking The reservation that triggered this rebuild.
      */
     public function rebuildSchedule(int $booking): void
     {
+        $gracePeriod = 0; // potentially allow a grace period before cleaners arrive
         $reservation = (new Booking($this->dbo))->getReservation($booking);
         $timezone = (new Config())->offsetGet('time_zone');
         $start = new \DateTime();
         $start->setTimezone(new \DateTimeZone($timezone));
-        $start->setTimestamp($reservation['']);
-        $sql = 'SELECT ';
+        $start->setTimestamp($reservation->checkout);
+        $start->setTime(0, 0);
+        $end = clone $start;
+        $end->add(new \DateInterval('P1D'));
+
+        $this->resetDailyCleaning($start->getTimestamp(), $end->getTimestamp());
+
+        // Get all reservations leaving this day
+        $sql = 'SELECT * FROM booking WHERE checkout BETWEEN ? AND ? ORDER BY checkout';
+        $statement = $this->dbo->prepare($sql);
+        $statement->execute([$start->getTimestamp(), $end->getTimestamp()]);
+
+        $cleaningStart = 0;
+        $end = 0;
+        while ($booking = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $reservation = new Types\Reservation($booking);
+
+            // Allow some time for late checkouts.
+            if ($cleaningStart === 0) {
+                $cleaningStart = $reservation->checkout + $gracePeriod;
+            }
+
+            // Ensure the crew has completed their last room.
+            if ($end > $cleaningStart) {
+                $cleaningStart = $end;
+            }
+
+            // Ensure nobody else is still booked into the room.
+            if ($this->hasOtherBookings($reservation->room, $cleaningStart)) {
+                continue;
+            }
+            $end = $this->scheduleCleaning($reservation->room, $cleaningStart);
+        }
+    }
+
+    /**
+     * @todo this query needs to protect against times near midnight
+     *
+     * @param int $startOfDay
+     * @param int $endOfDay
+     */
+    private function resetDailyCleaning(int $startOfDay, int $endOfDay)
+    {
+        $sql = 'DELETE FROM schedule WHERE start > ? and finish < ?';
+        $this->dbo->prepare($sql)->execute([$startOfDay, $endOfDay]);
+    }
+
+    /**
+     * @todo Fix DST issue in time calculation
+     * @todo Use real occupancy instead of worst-case to schedule
+     *
+     * @param int $room
+     * @param int $start
+     * @return int Timestamp for end of this cleaning shift
+     */
+    private function scheduleCleaning(int $room, int $start): int
+    {
+        $end = $start + 3600 * (new Room($this->dbo))->cleaningTime($room);
+        $crew = $this->getCrew($start, $end);
+        $statement = $this->dbo->prepare('INSERT INTO schedule (room, crew, start, finish) VALUES (?, ?, ?, ?)');
+        $statement->execute([$room, $crew, $start, $end]);
+        return $end;
+    }
+
+    /**
+     * @param int $room
+     * @param int $time
+     * @return bool
+     */
+    private function hasOtherBookings(int $room, int $time): bool
+    {
+        $sql = 'SELECT room FROM booking WHERE room <> ? AND ? BETWEEN checkin AND checkout LIMIT 1';
+        $statement = $this->dbo->prepare($sql);
+        $statement->execute([$room, $time]);
+        if ($statement->fetch()) {
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Get next available cleaning crew.
+     *
+     * @todo return 0 if no crew is available;
+     *
+     * @param int $start
+     * @param int $finish
+     * @return int
+     */
+    private function getCrew(int $start, int $finish): int
+    {
+        return 1;
     }
 }
