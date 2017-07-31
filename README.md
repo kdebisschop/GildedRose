@@ -47,8 +47,24 @@ controls.
 CONFIGURATION
 =============
  
-There are no configuration files or setting.
+Set local timezone in src/config.php.
 
+
+REST ENDPOINTS
+==============
+
+Listing room availability
+-------------------------
+
+*URI:* http://127.0.0.1:8000/rooms/available
+
+*Method:* GET
+
+*Parameters:*
+
+* _luggage_: (integer) The number of luggage pieces
+* _checkin_: (DateTime string) Date and time of checkin (like 2017-07-30T17:00:00-05:00)
+* _checkout_: (DateTime string) Date and time of checkout (like 2017-07-31T08:00:00-05:00)
 
 ARCHITECTURAL OVERVIEW
 ======================

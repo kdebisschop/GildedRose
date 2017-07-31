@@ -74,18 +74,17 @@ class Booking extends HotelObject
     /**
      * Get a reservation by its ID.
      * @param int $reservationId
-     * @return mixed
+     * @return Types\Reservation|array
      */
-    public function getReservation(int $reservationId) {
+    public function getReservation(int $reservationId)
+    {
         $statement = $this->dbo->prepare('SELECT room, customer, luggage, checkin, checkout FROM booking WHERE id = ?');
         $statement->execute([$reservationId]);
         $record = $statement->fetch(\PDO::FETCH_ASSOC);
         if ($record) {
-            $record['checkin'] = $this->date($record['checkin']);
-            $record['checkout'] = $this->date($record['checkout']);
-            return $record;
+            return new Types\Reservation($record);
         }
-        return [];
+        return ['status' => 404, 'message' => "No reservation with ID $reservationId"];
     }
 
     /**
@@ -108,8 +107,8 @@ class Booking extends HotelObject
         $availableRooms = [];
         $rules = new Rules($this->dbo);
         foreach ($rooms as $id => $room) {
+            $room['id'] = $id;
             if ($rules->isAvailable($room, $luggage, $checkin)) {
-                $room['id'] = $id;
                 $availableRooms[] = $room;
             }
         }

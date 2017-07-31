@@ -52,7 +52,7 @@ class BookingTest extends TestCase
         $this->assertEquals(409, $result['status'], print_r($result, 1));
 
         $reservation = $booking->getReservation(1);
-        $this->assertEquals(1, $reservation['room']);
+        $this->assertEquals(1, $reservation->room);
     }
 
     public function testFindAvailableRooms()
@@ -61,7 +61,7 @@ class BookingTest extends TestCase
         $now = new \DateTime();
         $now->add(new \DateInterval('P1D'));
         $available = $booking->findAvailableRooms(1, time(), $now->getTimestamp());
-        $this->assertCount(1, $available, print_r($available, TRUE));
+        $this->assertCount(1, $available, print_r($available, true));
         $this->assertEquals(3, $available[0]['id']);
         $this->assertEquals(1, $available[0]['capacity']);
         $this->assertEquals(2, $available[0]['storage']);

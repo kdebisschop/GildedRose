@@ -19,7 +19,7 @@ class Cleaners extends HotelObject
           (id INTEGER, name VARCHAR(32) UNIQUE, PRIMARY KEY(id ASC))';
         $this->dbo->exec($sql);
         $sql = 'CREATE TABLE IF NOT EXISTS schedule
-          (room INTEGER, name VARCHAR(32) UNIQUE, PRIMARY KEY(id ASC))';
+          (id INTEGER, room INTEGER, name VARCHAR(32) UNIQUE, start TIMESTAMP, finish TIMESTAMP, PRIMARY KEY(id ASC))';
         $this->dbo->exec($sql);
     }
 
@@ -46,7 +46,8 @@ class Cleaners extends HotelObject
         $start = $date->getTimestamp();
         $date->add(new \DateInterval('P1D'));
         $finish = $date->getTimestamp();
-        $sql = 'SELECT room, start, finish FROM schedule WHERE start BETWEEN ? AND ? AND finish BETWEEN ? and ? ORDER BY start';
+        $sql = 'SELECT room, start, finish FROM schedule
+          WHERE start BETWEEN ? AND ? AND finish BETWEEN ? and ? ORDER BY start';
         $statement = $this->dbo->prepare($sql);
         $statement->execute([$start, $finish, $start, $finish]);
         return $statement->fetchAll(\PDO::FETCH_ASSOC);
@@ -71,10 +72,12 @@ class Cleaners extends HotelObject
             $cleaning = 0;
         }
 
-        $sql = 'SELECT id FROM booking WHERE room = ? AND checkout BETWEEN ? AND ?';
+        $sql = 'SELECT id FROM booking WHERE room = ? AND checkout BETWEEN ? AND ? LIMIT 1';
         $statement = $this->dbo->prepare($sql);
         if ($statement->execute([$room, $cleaning, $checkin])) {
-            return false;
+            if ($statement->fetchColumn()) {
+                return false;
+            }
         }
 
         return true;
@@ -86,12 +89,26 @@ class Cleaners extends HotelObject
      * Not yet clear if complete rebuild will be required or if there is a practical
      * way to only rebuild a subset based on the reservation that is triggering the update.
      *
+     * For each day, assume cleaning shift runs more or less normal business hours - in
+     * particular, require that no shift runs overnight. Some trick points:
+     *
+     *  - There should be a reasonable rest period for the gnomes between shifts. Currently the law
+     *    allows them to work 16 continuous hours from 4 pm one day to 8 am the next. But we don't
+     *    want that even if the law currently allows it.
+     *  - Although the query is by day, we need to ensure we catch any rooms that were vacated
+     *    the previous day but not cleaned because the checkout time was out of shift.
+     *
      * @todo Not Yet Implemented
      *
      * @param int $booking The reservation that triggered this rebuild.
      */
     public function rebuildSchedule(int $booking): void
     {
-
+        $reservation = (new Booking($this->dbo))->getReservation($booking);
+        $timezone = (new Config())->offsetGet('time_zone');
+        $start = new \DateTime();
+        $start->setTimezone(new \DateTimeZone($timezone));
+        $start->setTimestamp($reservation['']);
+        $sql = 'SELECT ';
     }
 }
