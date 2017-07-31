@@ -66,6 +66,32 @@ Listing room availability
 * _checkin_: (DateTime string) Date and time of checkin (like 2017-07-30T17:00:00-05:00)
 * _checkout_: (DateTime string) Date and time of checkout (like 2017-07-31T08:00:00-05:00)
 
+Reserving a Room
+----------------
+
+*URI:* http://127.0.0.1:8000/rooms/reserve
+
+*Method:* POST
+
+*Parameters:*
+
+* _room_: (integer) The room number/ID
+* _customer_: (integer) The customer ID
+* _luggage_: (integer) The number of luggage pieces
+* _checkin_: (DateTime string) Date and time of checkin (like 2017-07-30T17:00:00-05:00)
+* _checkout_: (DateTime string) Date and time of checkout (like 2017-07-31T08:00:00-05:00)
+
+Getting Cleaner Schedule
+------------------------
+
+*URI:* http://127.0.0.1:8000/cleaners/schedule
+
+*Method:* GET
+
+*Parameters:*
+
+* _date_: (DateTime string) Date to get schedule for (like 2017-07-31)
+
 ARCHITECTURAL OVERVIEW
 ======================
 
