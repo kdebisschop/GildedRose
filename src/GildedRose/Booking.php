@@ -135,7 +135,7 @@ class Booking extends HotelObject
         $room = [];
         $availableRooms = $this->findAvailableRooms($luggage, $checkin, $checkout);
         foreach ($availableRooms as $room) {
-            if ($room['luggage'] == $luggage) {
+            if ($room['storage'] == $luggage) {
                 return $room;
             }
         }

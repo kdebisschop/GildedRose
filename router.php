@@ -29,6 +29,13 @@ switch ($requestUri) {
         return json_encode((new GildedRose\Booking($dbo))->findAvailableRooms($luggage, $checkin, $checkout));
         break;
 
+    case '/rooms/best-available':
+        $luggage = $request->query->get('luggage');
+        $checkin = date_create($request->query->get('checkin'))->getTimestamp();
+        $checkout = date_create($request->query->get('checkout'))->getTimestamp();
+        return json_encode((new GildedRose\Booking($dbo))->findBestAvailableRoom($luggage, $checkin, $checkout));
+        break;
+
     // @todo use request->request after v1
     case '/rooms/reserve':
         $room = $request->get('room');

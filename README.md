@@ -101,6 +101,10 @@ API of the application is accessed by URLs defined in a separate router file whi
 dispatches requests to the implementing classes and methods. Data is stored in an
 SQLite database in the project's var directory.
 
+Occupancy is optimized by ensuring that whenever a customer reserves a room, they are
+booked into the room with the fewest surplus luggage storage spaces - we customers can
+share spaces, but luggage must be with the customer so that becomes the limiting factor. 
+
 Classes
 -------
 

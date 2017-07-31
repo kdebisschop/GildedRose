@@ -65,5 +65,23 @@ class BookingTest extends TestCase
         $this->assertEquals(3, $available[0]['id']);
         $this->assertEquals(1, $available[0]['capacity']);
         $this->assertEquals(2, $available[0]['storage']);
+
+        $available = $booking->findAvailableRooms(0, time(), $now->getTimestamp());
+        $this->assertCount(4, $available, print_r($available, true));
+    }
+
+    public function testFindBestAvailableRoom()
+    {
+        $booking = new Booking($this->dbo);
+        $now = new \DateTime();
+        $now->add(new \DateInterval('P1D'));
+
+        $luggage = 1;
+        $available = $booking->findBestAvailableRoom($luggage, time(), $now->getTimestamp());
+        $this->assertGreaterThanOrEqual($luggage, $available['storage'], print_r($available, true));
+
+        $luggage = 0;
+        $available = $booking->findBestAvailableRoom($luggage, time(), $now->getTimestamp());
+        $this->assertEquals($luggage, $available['storage'], print_r($available, true));
     }
 }
