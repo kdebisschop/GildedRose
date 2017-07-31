@@ -6,6 +6,7 @@ for the Gilded Rose Inn. It exposes REST endpoints for critical management tasks
 including:
 
  * Listing room availability: http://127.0.0.1:8000/rooms/available
+ * Listing room availability: http://127.0.0.1:8000/rooms/best-available
  * Reserving a room: http://127.0.0.1:8000/rooms/reserve
  * Determining cleaning schedule: http://127.0.0.1:8000/cleaning/schedule
  
@@ -56,7 +57,9 @@ REST ENDPOINTS
 Listing room availability
 -------------------------
 
-*URI:* http://127.0.0.1:8000/rooms/available
+*URI:* http://127.0.0.1:8000/rooms/available (to get all rooms)
+
+*URI:* http://127.0.0.1:8000/rooms/best-available (to get best room for optimal occupancy)
 
 *Method:* GET
 
@@ -111,7 +114,7 @@ Classes
  * _Room_ represents the rooms in the inn, and provides methods for listing rooms in
    in the inn and finding information about a specific room given its room number (id).
    In particular, _Room_ is used to determine the number of occupants a room can have
-   and its luggae storage capacity.
+   and its luggage storage capacity.
  * _Occupant_ defines a customer, assigning a sequential ID and recording their name
    and contact information.
  * _Booking_ maintains room reservations, which are essentially relationships between
