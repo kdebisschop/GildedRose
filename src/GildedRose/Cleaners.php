@@ -199,6 +199,12 @@ class Cleaners extends HotelObject
      */
     private function getCrew(int $start, int $finish): int
     {
+        // SELECT crew FROM cleaning WHERE <today>
+
+        // SELECT MIN(start) from cleanin
+
+        // ensure less than 8 hours.
+
         return 1;
     }
 }
